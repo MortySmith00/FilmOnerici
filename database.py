@@ -1,0 +1,117 @@
+import sqlite3 as sql
+
+conn = sql.connect('FilmList.db')
+print("Bağlantı gerçekleştirildi")
+
+cursor = conn.cursor()
+print("Cursor oluşturuldu.")
+
+films = [
+    ('The Shawshank Redemption', 'Drama', 'Frank Darabont', 9.3),
+    ('The Godfather', 'Crime', 'Francis Ford Coppola', 9.2),
+    ('The Dark Knight', 'Action', 'Christopher Nolan', 9.0),
+    ('Pulp Fiction', 'Crime', 'Quentin Tarantino', 8.9),
+    ('The Lord of the Rings: The Return of the King', 'Adventure', 'Peter Jackson', 8.9),
+    ('Forrest Gump', 'Drama', 'Robert Zemeckis', 8.8),
+    ('Inception', 'Sci-Fi', 'Christopher Nolan', 8.8),
+    ('Fight Club', 'Drama', 'David Fincher', 8.8),
+    ('The Matrix', 'Sci-Fi', 'Lana Wachowski, Lilly Wachowski', 8.7),
+    ('Goodfellas', 'Crime', 'Martin Scorsese', 8.7),
+    ('The Empire Strikes Back', 'Adventure', 'Irvin Kershner', 8.7),
+    ('The Lord of the Rings: The Fellowship of the Ring', 'Adventure', 'Peter Jackson', 8.8),
+    ('Star Wars', 'Adventure', 'George Lucas', 8.6),
+    ('The Silence of the Lambs', 'Thriller', 'Jonathan Demme', 8.6),
+    ('Saving Private Ryan', 'Drama', 'Steven Spielberg', 8.6),
+    ('Schindler\'s List', 'Biography', 'Steven Spielberg', 8.9),
+    ('The Green Mile', 'Drama', 'Frank Darabont', 8.6),
+    ('Interstellar', 'Sci-Fi', 'Christopher Nolan', 8.6),
+    ('Parasite', 'Thriller', 'Bong Joon Ho', 8.6),
+    ('The Pianist', 'Biography', 'Roman Polanski', 8.5),
+    ('Gladiator', 'Action', 'Ridley Scott', 8.5),
+    ('The Departed', 'Crime', 'Martin Scorsese', 8.5),
+    ('Whiplash', 'Drama', 'Damien Chazelle', 8.5),
+    ('The Prestige', 'Drama', 'Christopher Nolan', 8.5),
+    ('The Lion King', 'Animation', 'Roger Allers, Rob Minkoff', 8.5),
+    ('The Usual Suspects', 'Crime', 'Bryan Singer', 8.5),
+    ('Se7en', 'Crime', 'David Fincher', 8.6),
+    ('The Intouchables', 'Biography', 'Olivier Nakache, Éric Toledano', 8.5),
+    ('The Dark Knight Rises', 'Action', 'Christopher Nolan', 8.4),
+    ('Joker', 'Crime', 'Todd Phillips', 8.4),
+    ('Avengers: Endgame', 'Action', 'Anthony Russo, Joe Russo', 8.4),
+    ('Braveheart', 'Biography', 'Mel Gibson', 8.4),
+    ('The Wolf of Wall Street', 'Biography', 'Martin Scorsese', 8.2),
+    ('Django Unchained', 'Drama', 'Quentin Tarantino', 8.4),
+    ('Inglourious Basterds', 'Adventure', 'Quentin Tarantino', 8.3),
+    ('The Shining', 'Drama', 'Stanley Kubrick', 8.4),
+    ('WALL·E', 'Animation', 'Andrew Stanton', 8.4),
+    ('The Great Dictator', 'Comedy', 'Charles Chaplin', 8.4),
+    ('The Truman Show', 'Comedy', 'Peter Weir', 8.1),
+    ('A Beautiful Mind', 'Biography', 'Ron Howard', 8.2),
+    ('The Grand Budapest Hotel', 'Adventure', 'Wes Anderson', 8.1),
+    ('The Social Network', 'Biography', 'David Fincher', 7.7),
+    ('Mad Max: Fury Road', 'Action', 'George Miller', 8.1),
+    ('The Revenant', 'Adventure', 'Alejandro G. Iñárritu', 8.0),
+    ('Blade Runner 2049', 'Sci-Fi', 'Denis Villeneuve', 8.0),
+    ('La La Land', 'Comedy', 'Damien Chazelle', 8.0),
+    ('The Big Lebowski', 'Comedy', 'Joel Coen, Ethan Coen', 8.1),
+    ('The Hateful Eight', 'Crime', 'Quentin Tarantino', 7.8),
+    ('The Irishman', 'Biography', 'Martin Scorsese', 7.8),
+    ('Once Upon a Time in Hollywood', 'Comedy', 'Quentin Tarantino', 7.6),
+    ('Jojo Rabbit', 'Comedy', 'Taika Waititi', 7.9),
+    ('1917', 'Drama', 'Sam Mendes', 8.3),
+    ('Ford v Ferrari', 'Biography', 'James Mangold', 8.1),
+    ('Jaws', 'Adventure', 'Steven Spielberg', 8.0),
+    ('Jurassic Park', 'Adventure', 'Steven Spielberg', 8.1),
+    ('The Sixth Sense', 'Drama', 'M. Night Shyamalan', 8.1),
+    ('The Incredibles', 'Animation', 'Brad Bird', 8.0),
+    ('Finding Nemo', 'Animation', 'Andrew Stanton', 8.1),
+    ('Toy Story', 'Animation', 'John Lasseter', 8.3),
+    ('Up', 'Animation', 'Pete Docter, Bob Peterson', 8.2),
+    ('Inside Out', 'Animation', 'Pete Docter, Ronnie del Carmen', 8.1),
+    ('Coco', 'Animation', 'Lee Unkrich, Adrian Molina', 8.4),
+    ('Ratatouille', 'Animation', 'Brad Bird, Jan Pinkava', 8.0),
+    ('Monsters, Inc.', 'Animation', 'Pete Docter, David Silverman, Lee Unkrich', 8.1),
+    ('The Lion King', 'Animation', 'Roger Allers, Rob Minkoff', 8.5),
+    ('Beauty and the Beast', 'Animation', 'Gary Trousdale, Kirk Wise', 8.0),
+    ('Aladdin', 'Animation', 'Ron Clements, John Musker', 8.0),
+    ('Mulan', 'Animation', 'Tony Bancroft, Barry Cook', 7.6),
+    ('Frozen', 'Animation', 'Chris Buck, Jennifer Lee', 7.4),
+    ('Moana', 'Animation', 'Ron Clements, John Musker, Don Hall, Chris Williams', 7.6),
+    ('Zootopia', 'Animation', 'Byron Howard, Rich Moore, Jared Bush', 8.0),
+    ('Tangled', 'Animation', 'Nathan Greno, Byron Howard', 7.7),
+    ('Shrek', 'Animation', 'Andrew Adamson, Vicky Jenson', 7.9),
+    ('Kung Fu Panda', 'Animation', 'Mark Osborne, John Stevenson', 7.6),
+    ('How to Train Your Dragon', 'Animation', 'Dean DeBlois, Chris Sanders', 8.1),
+    ('Despicable Me', 'Animation', 'Pierre Coffin, Chris Renaud', 7.6),
+    ('The Secret Life of Pets', 'Animation', 'Chris Renaud, Yarrow Cheney', 6.5),
+    ('Sing', 'Animation', 'Garth Jennings', 7.1),
+    ('The Lego Movie', 'Animation', 'Phil Lord, Christopher Miller', 7.7),
+    ('Spider-Man: Into the Spider-Verse', 'Animation', 'Bob Persichetti, Peter Ramsey, Rodney Rothman', 8.4),
+    ('The Nightmare Before Christmas', 'Animation', 'Henry Selick', 8.0),
+    ('Coraline', 'Animation', 'Henry Selick', 7.7),
+    ('Kubo and the Two Strings', 'Animation', 'Travis Knight', 7.8),
+    ('The Boxtrolls', 'Animation', 'Graham Annable, Anthony Stacchi', 6.8),
+    ('ParaNorman', 'Animation', 'Chris Butler, Sam Fell', 7.0),
+    ('Frankenweenie', 'Animation', 'Tim Burton', 7.0),
+    ('Corpse Bride', 'Animation', 'Tim Burton, Mike Johnson', 7.3),
+    ('Big Hero 6', 'Animation', 'Don Hall, Chris Williams', 7.8),
+    ('Wreck-It Ralph', 'Animation', 'Rich Moore', 7.7),
+    ('Ralph Breaks the Internet', 'Animation', 'Phil Johnston, Rich Moore', 7.0),
+    ('Frozen II', 'Animation', 'Chris Buck, Jennifer Lee', 6.8),
+    ('The Croods', 'Animation', 'Kirk DeMicco, Chris Sanders', 7.2),
+    ('The Croods: A New Age', 'Animation', 'Joel Crawford', 7.0),
+    ('Trolls', 'Animation', 'Walt Dohrn, Mike Mitchell', 6.5),
+    ('Trolls World Tour', 'Animation', 'Walt Dohrn, David P. Smith', 6.1),
+]
+
+cursor.executemany("""
+INSERT INTO FILM (FilmAdi, FilmTuru, Yonetmen, IMDbPuanı)
+VALUES (?, ?, ?, ?)
+""", films)
+
+conn.commit()
+print("Filmler eklendi ve değişiklikler kaydedildi.")
+
+conn.close()
+print("Bağlantı kapatıldı.")
+
